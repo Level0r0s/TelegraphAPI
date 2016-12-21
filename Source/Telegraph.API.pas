@@ -16,19 +16,19 @@ Type
     Function ApiUrl: String; override;
   public
     Function createAccount(Const short_name: String; Const author_name: String = '';
-      author_url: String = ''): TtphAccount;
+      const author_url: String = ''): TtphAccount;
     Function editAccountInfo(Const access_token, short_name: String; Const author_name: String = '';
-      author_url: String = ''): TtphAccount;
+      const author_url: String = ''): TtphAccount;
     Function getAccountInfo(Const access_token: String;
       fields: TtphFields = [TtphField.short_name, TtphField.author_name, TtphField.author_url])
       : TtphAccount;
     Function revokeAccessToken(Const access_token: String): TtphAccount;
     Function createPage(Const access_token, title: String; content: TArray<TtphNode>;
-      Const author_name: String = ''; Const author_url: String; return_content: Boolean = False)
-      : TtphPage;
+      Const author_name: String = ''; Const author_url: String = '';
+      return_content: Boolean = False): TtphPage;
     Function editPage(Const access_token, path, title: String; content: TArray<TtphNode>;
-      Const author_name: String = ''; Const author_url: String; return_content: Boolean = False)
-      : TtphPage;
+      Const author_name: String = ''; Const author_url: String = '';
+      return_content: Boolean = False): TtphPage;
     Function getPage(Const path: String; Const return_content: Boolean = False): TtphPage;
     Function getPageList(Const access_token: String; Const offset: Integer = 0;
       Const limit: Integer = 50): TtphPageList;
@@ -63,7 +63,7 @@ begin
   Result := 'https://api.telegra.ph/';
 end;
 
-function TTelegraphAPI.createAccount(const short_name, author_name: String; author_url: String)
+function TTelegraphAPI.createAccount(const short_name, author_name, author_url: String)
   : TtphAccount;
 var
   Param: TDictionary<String, TValue>;
@@ -106,7 +106,7 @@ begin
   end;
 end;
 
-function TTelegraphAPI.editAccountInfo(const access_token, short_name, author_name: String;
+function TTelegraphAPI.editAccountInfo(const access_token, short_name, author_name,
   author_url: String): TtphAccount;
 var
   Param: TDictionary<String, TValue>;

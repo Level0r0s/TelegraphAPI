@@ -11,6 +11,7 @@ Type
   TtphField = (short_name, author_name, author_url, auth_url, page_count);
   TtphFields = set of TtphField;
 {$SCOPEDENUMS OFF}
+
   /// <summary>
   /// This object represents a DOM element node.
   /// </summary>
@@ -274,7 +275,7 @@ var
   I: Integer;
 begin
   for I := Low(Fpages) to High(Fpages) do
-    FreeAndNil(Fpages);
+    FreeAndNil(Fpages[I]);
   inherited;
 end;
 
