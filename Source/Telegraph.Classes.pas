@@ -1,4 +1,4 @@
-unit Telegraph.Classes;
+﻿unit Telegraph.Classes;
 
 interface
 
@@ -17,6 +17,8 @@ Type
     FTag: String;
     Fattrs: String;
     Fchildren: TArray<TtphNode>;
+  public
+    destructor Destroy; override;
   published
     /// <summary>
     /// Name of the DOM element.
@@ -58,6 +60,8 @@ Type
     Fcontent: TArray<TtphNode>;
     Fviews: Integer;
     Fcan_edit: Boolean;
+  public
+    destructor Destroy; override;
   published
     /// <summary>
     /// Path to the page.
@@ -123,6 +127,8 @@ Type
   private
     Ftotal_count: Integer;
     Fpages: TArray<TtphPage>;
+  public
+    destructor Destroy; override;
   published
     /// <summary>
     /// Total number of pages belonging to the target Telegraph account.
@@ -233,6 +239,39 @@ begin
 {$IFNDEF AUTOREFCOUNT}
     FreeAndNil(FResultObject);
 {$ENDIF}
+  inherited;
+end;
+
+{ TtphNode }
+
+destructor TtphNode.Destroy;
+var
+  I: Integer;
+begin
+  for I := Low(Fchildren) to High(Fchildren) do
+    FreeAndNil(Fchildren[i]);
+  inherited;
+end;
+
+{ TtphPage }
+
+destructor TtphPage.Destroy;
+var
+  I: Integer;
+begin
+  for I := Low(Fcontent) to High(Fcontent) do
+    FreeAndNil(Fcontent[i]);
+  inherited;
+end;
+
+{ TtphPageList }
+
+destructor TtphPageList.Destroy;
+var
+  I: Integer;
+begin
+  for I := Low(Fpages) to High(Fpages) do
+    FreeAndNil(Fpages);
   inherited;
 end;
 
