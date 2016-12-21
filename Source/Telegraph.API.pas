@@ -100,7 +100,7 @@ begin
     Param.Add('author_name', author_name);
     Param.Add('author_url', author_url);
     Param.Add('return_content', return_content);
-    Result := Api<TtphAccount>('createPage', Param);
+    Result := Api<TtphPage>('createPage', Param);
   finally
     Param.Free;
   end;
@@ -145,7 +145,7 @@ begin
     Param.Add('author_name', author_name);
     Param.Add('author_url', author_url);
     Param.Add('return_content', return_content);
-    Result := Api<TtphAccount>('createPage', Param);
+    Result := Api<TtphPage>('editPage', Param);
   finally
     Param.Free;
   end;
@@ -219,7 +219,7 @@ begin
   Param := TDictionary<String, TValue>.Create;
   try
     Param.Add('access_token', access_token);
-    Result := Api<TtphAccount>('getAccountInfo', Param);
+    Result := Api<TtphAccount>('revokeAccessToken', Param);
   finally
     Param.Free;
   end;
