@@ -15,12 +15,12 @@ Type
   /// <summary>
   /// This object represents a DOM element node.
   /// </summary>
-  [Alias('Node')]
-  TtphNode = Class
+  [Alias('NodeElement')]
+  TtphNodeElement = Class
   private
     FTag: String;
     Fattrs: String;
-    Fchildren: TArray<TtphNode>;
+    Fchildren: TArray<TtphNodeElement>;
   public
     destructor Destroy; override;
   published
@@ -45,7 +45,7 @@ Type
     /// Optional. List of child nodes for the DOM element.
     /// </summary>
     [Alias('children')]
-    property children: TArray<TtphNode> read Fchildren write Fchildren;
+    property children: TArray<TtphNodeElement> read Fchildren write Fchildren;
   End;
 
   /// <summary>
@@ -61,7 +61,7 @@ Type
     Fauthor_name: String;
     Fauthor_url: String;
     Fimage_url: String;
-    Fcontent: TArray<TtphNode>;
+    Fcontent: TArray<TtphNodeElement>;
     Fviews: Integer;
     Fcan_edit: Boolean;
   public
@@ -108,7 +108,7 @@ Type
     /// Optional. Content of the page.
     /// </summary>
     [Alias('content')]
-    property content: TArray<TtphNode> read Fcontent write Fcontent;
+    property content: TArray<TtphNodeElement> read Fcontent write Fcontent;
     /// <summary>
     /// Number of page views for the page.
     /// </summary>
@@ -248,7 +248,7 @@ end;
 
 { TtphNode }
 
-destructor TtphNode.Destroy;
+destructor TtphNodeElement.Destroy;
 var
   I: Integer;
 begin

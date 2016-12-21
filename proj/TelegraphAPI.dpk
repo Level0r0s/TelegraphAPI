@@ -28,8 +28,10 @@ package TelegraphAPI;
 {$IMPLICITBUILD ON}
 
 requires
-  rtl,
-  fmx;
+{$IFDEF DEBUG}
+  fmx,
+{$ENDIF}
+  rtl;
 
 contains
   Telegraph.Classes in '..\Source\Telegraph.Classes.pas',

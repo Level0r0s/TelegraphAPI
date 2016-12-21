@@ -1,13 +1,15 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-<test-results name="D:\repository\TelegraphAPI\Test\Win32\Debug\Project12.exe" total="1" errors="0" failures="0" ignored="0" inconclusive="0" not-run="0" skipped="0" invalid="0" date="2016-12-21" time="9.477">
+<test-results name="D:\repository\TelegraphAPI\Test\Win32\Debug\Project12.exe" total="3" errors="0" failures="0" ignored="0" inconclusive="0" not-run="0" skipped="0" invalid="0" date="2016-12-21" time="0.554">
   <culture-info current-culture="en" current-uiculture="en" />
-  <test-suite type="Assembly" name="Project12.exe" executed="true" result="Success" success="True" time="9.477" asserts="0">
+  <test-suite type="Assembly" name="Project12.exe" executed="true" result="Success" success="True" time="0.554" asserts="0">
     <results>
-        <test-suite type="Namespace" name="Unit10" executed="true" result="Success" success="True" time="9.477" asserts="0" >
+        <test-suite type="Namespace" name="Unit10" executed="true" result="Success" success="True" time="0.554" asserts="0" >
           <results>
-              <test-suite type="Fixture" name="TMyTestObject" executed="True" result="Success" success="True" time="9.477" >
+              <test-suite type="Fixture" name="TMyTestObject" executed="True" result="Success" success="True" time="0.554" >
                 <results>
-                  <test-case name="createAccount.TestSample" executed="True" result="Success" success="True" time="9.476" asserts="0" />
+                  <test-case name="createAccount.TestSample" executed="True" result="Success" success="True" time="0.398" asserts="0" />
+                  <test-case name="editAccountInfo.TestSample" executed="True" result="Success" success="True" time="0.080" asserts="0" />
+                  <test-case name="getAccountInfoTest" executed="True" result="Success" success="True" time="0.074" asserts="0" />
                 </results>
               </test-suite>
           </results>

@@ -85,8 +85,8 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
+        <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="..\Source\Telegraph.Classes.pas"/>
         <DCCReference Include="..\Source\Telega.API.Core.pas"/>
         <DCCReference Include="..\Source\Telegraph.Api.pas"/>

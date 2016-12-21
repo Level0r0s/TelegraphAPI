@@ -23,10 +23,10 @@ Type
       fields: TtphFields = [TtphField.short_name, TtphField.author_name, TtphField.author_url])
       : TtphAccount;
     Function revokeAccessToken(Const access_token: String): TtphAccount;
-    Function createPage(Const access_token, title: String; content: TArray<TtphNode>;
+    Function createPage(Const access_token, title: String; content: TArray<TValue>;
       Const author_name: String = ''; Const author_url: String = '';
       return_content: Boolean = False): TtphPage;
-    Function editPage(Const access_token, path, title: String; content: TArray<TtphNode>;
+    Function editPage(Const access_token, path, title: String; content: TArray<TValue>;
       Const author_name: String = ''; Const author_url: String = '';
       return_content: Boolean = False): TtphPage;
     Function getPage(Const path: String; Const return_content: Boolean = False): TtphPage;
@@ -38,24 +38,27 @@ Type
 implementation
 
 uses
+  XSuperObject,
   System.TypInfo;
 
 { TTelegraphAPI }
 
 function TTelegraphAPI.tphFieldsToString(tphFields: TtphFields): String;
+var
+  JA: ISuperArray;
 begin
-  Result := '[';
+  JA := TSuperArray.Create;
   if TtphField.short_name in tphFields then
-    Result := Result + '"short_name"';
+    JA.Add('short_name');
   if TtphField.author_name in tphFields then
-    Result := Result + '"author_name"';
+    JA.Add('author_name');
   if TtphField.author_url in tphFields then
-    Result := Result + '"author_url"';
+    JA.Add('author_url');
   if TtphField.auth_url in tphFields then
-    Result := Result + '"auth_url"';
+    JA.Add('auth_url');
   if TtphField.page_count in tphFields then
-    Result := Result + '"page_count"';
-  Result := Result + ']';
+    JA.Add('page_count');
+  Result := JA.AsJSON;
 end;
 
 function TTelegraphAPI.ApiUrl: String;
@@ -79,7 +82,7 @@ begin
   end;
 end;
 
-function TTelegraphAPI.createPage(const access_token, title: String; content: TArray<TtphNode>;
+function TTelegraphAPI.createPage(const access_token, title: String; content: TArray<TValue>;
   const author_name, author_url: String; return_content: Boolean): TtphPage;
 var
   Param: TDictionary<String, TValue>;
@@ -123,7 +126,7 @@ begin
   end;
 end;
 
-function TTelegraphAPI.editPage(const access_token, path, title: String; content: TArray<TtphNode>;
+function TTelegraphAPI.editPage(const access_token, path, title: String; content: TArray<TValue>;
   const author_name, author_url: String; return_content: Boolean): TtphPage;
 var
   Param: TDictionary<String, TValue>;

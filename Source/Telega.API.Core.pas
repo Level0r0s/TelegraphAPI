@@ -4,11 +4,11 @@ interface
 
 {$DEFINE TG_AUTOLib}
 {$IF Defined(TG_AUTOLib)}
-  {$IF CompilerVersion >= 17.0}
-    {$DEFINE TG_NetHttpClient}
-  {$ELSE}
-    {$DEFINE TG_INDY}
-  {$ENDIF}
+{$IF CompilerVersion >= 17.0}
+{$DEFINE TG_NetHttpClient}
+{$ELSE}
+{$DEFINE TG_INDY}
+{$ENDIF}
 {$ENDIF}
 
 uses
@@ -30,7 +30,7 @@ uses
 {$ENDIF}
   XSuperObject,
   TelegAPi.Utils,
-  TelegAPi.Classes;
+  Telegraph.Classes;
 
 Type
 {$IF Defined(TG_NetHttpClient)}
@@ -66,7 +66,7 @@ function TTelegaCore.API<T>(const Method: String; Parameters: TDictionary<String
 var
   lHttp: THTTPClient;
   lHttpResponse: IHTTPResponse;
-  lApiResponse: TtgApiResponse<T>;
+  lApiResponse: TtphApiResponse<T>;
   lURL_TELEG: String;
   LParamToDate: TMultipartFormData;
 begin
@@ -87,14 +87,17 @@ begin
         OnError(Self, lHttpResponse.StatusCode, lHttpResponse.StatusText);
       Exit;
     end;
-    lApiResponse := TtgApiResponse<T>.FromJSON(lHttpResponse.ContentAsString);
+{$IFDEF DEBUG}
+    Log.d(lHttpResponse.ContentAsString);
+{$ENDIF}
+    lApiResponse := TtphApiResponse<T>.FromJSON(lHttpResponse.ContentAsString);
     if Not lApiResponse.Ok then
     begin
 {$IFDEF DEBUG}
-      Log.d(lHttpResponse.ContentAsString);
+      Log.d(lApiResponse.Error);
 {$ENDIF}
       if Assigned(OnError) then
-        OnError(Self, lApiResponse.Code, lApiResponse.Message);
+        OnError(Self, -1, lApiResponse.Error);
       Exit;
     end;
     Result := lApiResponse.ResultObject;
@@ -119,7 +122,7 @@ function TTelegraph.API<T>(const Method: String; Parameters: TDictionary<String,
 var
   lHttp: TIdHTTP;
   lHttpResponse: String;
-  lApiResponse: TtgApiResponse<T>;
+  lApiResponse: TtphApiResponse<T>;
   lURL_TELEG: String;
   LParamToDate: TMultipartFormData;
 begin
@@ -140,15 +143,15 @@ begin
         OnError(Self, lHttp.ResponseCode, lHttp.ResponseText);
       Exit;
     end;
-    lApiResponse := TtgApiResponse<T>.FromJSON(lHttpResponse);
+    lApiResponse := TtphApiResponse<T>.FromJSON(lHttpResponse);
     if Not lApiResponse.Ok then
     begin
       if Assigned(OnError) then
-        OnError(Self, lApiResponse.Code, lApiResponse.Message);
+        OnError(Self, -1, lApiResponse.Error);
       Exit;
     end;
     Result := lApiResponse.ResultObject;
-    lApiResponse.ResultObject := Default(T);
+    lApiResponse.ResultObject := Default (T);
   finally
     FreeAndNil(LParamToDate);
     FreeAndNil(lHttp);
@@ -162,11 +165,36 @@ end;
 function TTelegaCore.ParamsToFormData(Parameters: TDictionary<String, TValue>): TMultipartFormData;
 var
   parameter: TPair<String, TValue>;
+  JA: ISuperArray;
+  I: Integer;
 begin
   Result := TMultipartFormData.Create;
   for parameter in Parameters do
   begin
-    if parameter.Value.IsType<string> then
+    if parameter.Value.IsType<TtphNodeElement> then
+    Begin
+      if NOT parameter.Value.AsString.IsEmpty then
+        Result.AddField(parameter.Key, parameter.Value.AsObject.AsJSON)
+    End
+    else if parameter.Value.IsArray then
+    Begin
+      JA := TSuperArray.Create();
+      for I := 0 to parameter.Value.GetArrayLength - 1 do
+      Begin
+        if parameter.Value.GetArrayElement(I).IsType<string> then
+        Begin
+          if NOT parameter.Value.GetArrayElement(I).AsString.IsEmpty then
+            JA.Add(parameter.Value.GetArrayElement(I).AsString);
+        End
+        else if parameter.Value.GetArrayElement(I).IsType<TtphNodeElement> then
+        Begin
+          if parameter.Value.GetArrayElement(I).AsObject <> nil then
+            JA.Add(parameter.Value.GetArrayElement(I).AsObject.AsJSON);
+        End;
+      End;
+      Result.AddField(parameter.Key, JA.AsJSON);
+    End
+    else if parameter.Value.IsType<string> then
     Begin
       if NOT parameter.Value.AsString.IsEmpty then
         Result.AddField(parameter.Key, parameter.Value.AsString)
