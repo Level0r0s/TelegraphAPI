@@ -28,10 +28,12 @@ package TelegraphAPI;
 {$IMPLICITBUILD ON}
 
 requires
-  rtl;
+  rtl,
+  fmx;
 
 contains
   Telegraph.Classes in '..\Source\Telegraph.Classes.pas',
-  Telegraph.API in '..\Source\Telegraph.API.pas';
+  Telega.API.Core in '..\Source\Telega.API.Core.pas',
+  Telegraph.Api in '..\Source\Telegraph.Api.pas';
 
 end.
