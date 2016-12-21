@@ -7,7 +7,10 @@ uses
   System.SysUtils;
 
 Type
-
+{$SCOPEDENUMS ON}
+  TtphField = (short_name, author_name, author_url, auth_url, page_count);
+  TtphFields = set of TtphField;
+{$SCOPEDENUMS OFF}
   /// <summary>
   /// This object represents a DOM element node.
   /// </summary>
@@ -195,8 +198,8 @@ Type
   End;
 
   /// <summary>
-  ///   This object represents the number of page views for a Telegraph
-  ///   article.
+  /// This object represents the number of page views for a Telegraph
+  /// article.
   /// </summary>
   [Alias('PageViews')]
   TtphPageViews = Class
@@ -249,7 +252,7 @@ var
   I: Integer;
 begin
   for I := Low(Fchildren) to High(Fchildren) do
-    FreeAndNil(Fchildren[i]);
+    FreeAndNil(Fchildren[I]);
   inherited;
 end;
 
@@ -260,7 +263,7 @@ var
   I: Integer;
 begin
   for I := Low(Fcontent) to High(Fcontent) do
-    FreeAndNil(Fcontent[i]);
+    FreeAndNil(Fcontent[I]);
   inherited;
 end;
 
