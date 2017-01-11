@@ -4,12 +4,16 @@ interface
 
 uses
   XSuperObject,
+  TelegAPi.Utils,
+  System.Generics.Collections,
   System.SysUtils;
 
 Type
 {$SCOPEDENUMS ON}
   TtphField = (short_name, author_name, author_url, auth_url, page_count);
   TtphFields = set of TtphField;
+  TtphTag = (a, aside, b, blockquote, br, code, em, figcaption, figure, h3, h4, hr, i, iframe, img,
+    li, ol, p, pre, s, strong, u, ul, video);
 {$SCOPEDENUMS OFF}
 
   /// <summary>
@@ -20,8 +24,14 @@ Type
   private
     FTag: String;
     Fattrs: String;
-    Fchildren: TArray<TtphNodeElement>;
+    FchildrenList: TObjectList<TtphNodeElement>;
+    FTagOrd: TtphTag;
+    function GetTagOrd: TtphTag;
+    procedure SetTagOrd(const Value: TtphTag);
+    function Getchildren: TArray<TtphNodeElement>;
+    procedure Setchildren(const Value: TArray<TtphNodeElement>);
   public
+    constructor Create;
     destructor Destroy; override;
   published
     /// <summary>
@@ -45,7 +55,9 @@ Type
     /// Optional. List of child nodes for the DOM element.
     /// </summary>
     [Alias('children')]
-    property children: TArray<TtphNodeElement> read Fchildren write Fchildren;
+    property children: TArray<TtphNodeElement> read Getchildren write Setchildren;
+    [DISABLE]
+    property TagOrd: TtphTag read GetTagOrd write SetTagOrd;
   End;
 
   /// <summary>
@@ -248,12 +260,14 @@ end;
 
 { TtphNode }
 
-destructor TtphNodeElement.Destroy;
-var
-  I: Integer;
+constructor TtphNodeElement.Create;
 begin
-  for I := Low(Fchildren) to High(Fchildren) do
-    FreeAndNil(Fchildren[I]);
+  FchildrenList := TObjectList<TtphNodeElement>.Create;
+end;
+
+destructor TtphNodeElement.Destroy;
+begin
+  FchildrenList.Free;
   inherited;
 end;
 
@@ -261,10 +275,10 @@ end;
 
 destructor TtphPage.Destroy;
 var
-  I: Integer;
+  i: Integer;
 begin
-  for I := Low(Fcontent) to High(Fcontent) do
-    FreeAndNil(Fcontent[I]);
+  for i := Low(Fcontent) to High(Fcontent) do
+    FreeAndNil(Fcontent[i]);
   inherited;
 end;
 
@@ -272,11 +286,32 @@ end;
 
 destructor TtphPageList.Destroy;
 var
-  I: Integer;
+  i: Integer;
 begin
-  for I := Low(Fpages) to High(Fpages) do
-    FreeAndNil(Fpages[I]);
+  for i := Low(Fpages) to High(Fpages) do
+    FreeAndNil(Fpages[i]);
   inherited;
+end;
+
+function TtphNodeElement.Getchildren: TArray<TtphNodeElement>;
+begin
+  Result := FchildrenList.ToArray;
+end;
+
+function TtphNodeElement.GetTagOrd: TtphTag;
+begin
+  Result := TEnum<TtphTag>.FromString(Tag);
+end;
+
+procedure TtphNodeElement.Setchildren(const Value: TArray<TtphNodeElement>);
+begin
+  FchildrenList.Clear;
+  FchildrenList.AddRange(Value);
+end;
+
+procedure TtphNodeElement.SetTagOrd(const Value: TtphTag);
+begin
+  FTag := TEnum<TtphTag>.ToString(Value);
 end;
 
 end.

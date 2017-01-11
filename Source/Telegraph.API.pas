@@ -15,6 +15,31 @@ Type
   protected
     Function ApiUrl: String; override;
   public
+    /// <summary>
+    /// Use this method to create a new Telegraph account.
+    /// </summary>
+    /// <param name="short_name">
+    /// Required. Account name, helps users with several accounts remember
+    /// which they are currently using. Displayed to the user above the
+    /// "Edit/Publish" button on Telegra.ph, other users don't see this name.
+    /// </param>
+    /// <param name="author_name">
+    /// Default author name used when creating new articles.
+    /// </param>
+    /// <param name="author_url">
+    /// Default profile link, opened when users click on the author's name
+    /// below the title. Can be any link, not necessarily to a Telegram
+    /// profile or channel.
+    /// </param>
+    /// <returns>
+    /// On success, returns an Account object with the regular fields and an
+    /// additional access_token field.
+    /// </returns>
+    /// <remarks>
+    /// Most users only need one account, but this can be useful for channel
+    /// administrators who would like to keep individual author names and
+    /// profile links for each of their channels.
+    /// </remarks>
     Function createAccount(Const short_name: String; Const author_name: String = '';
       const author_url: String = ''): TtphAccount;
     Function editAccountInfo(Const access_token, short_name: String; Const author_name: String = '';
@@ -23,9 +48,40 @@ Type
       fields: TtphFields = [TtphField.short_name, TtphField.author_name, TtphField.author_url])
       : TtphAccount;
     Function revokeAccessToken(Const access_token: String): TtphAccount;
-    Function createPage(Const access_token, title: String; content: TArray<TValue>;
+    /// <summary>
+    /// Use this method to create a new Telegraph page.
+    /// </summary>
+    /// <param name="access_token">
+    /// Required. Access token of the Telegraph account.
+    /// </param>
+    /// <param name="title">
+    /// Required. Page title.
+    /// </param>
+    /// <param name="content">
+    /// Required. Content of the page.
+    /// </param>
+    /// <param name="author_name">
+    /// Author name, displayed below the article's title. <br />
+    /// </param>
+    /// <param name="author_url">
+    /// Profile link, opened when users click on the author's name below the
+    /// title. Can be any link, not necessarily to a Telegram profile or
+    /// channel.
+    /// </param>
+    /// <param name="return_content">
+    /// If true, a content field will be returned in the Page object (see:
+    /// Content format).
+    /// </param>
+    /// <returns>
+    /// On success, returns a Page object.
+    /// </returns>
+    Function createPage(Const access_token, title: String; content: TArray<String>;
       Const author_name: String = ''; Const author_url: String = '';
-      return_content: Boolean = False): TtphPage;
+      return_content: Boolean = False): TtphPage; overload;
+    Function createPage(Const access_token, title: String; content: TArray<TtphNodeElement>;
+      Const author_name: String = ''; Const author_url: String = '';
+      return_content: Boolean = False): TtphPage; overload;
+
     Function editPage(Const access_token, path, title: String; content: TArray<TValue>;
       Const author_name: String = ''; Const author_url: String = '';
       return_content: Boolean = False): TtphPage;
@@ -82,24 +138,18 @@ begin
   end;
 end;
 
-function TTelegraphAPI.createPage(const access_token, title: String; content: TArray<TValue>;
-  const author_name, author_url: String; return_content: Boolean): TtphPage;
+function TTelegraphAPI.createPage(const access_token, title: String;
+  content: TArray<String>; const author_name, author_url: String;
+  return_content: Boolean): TtphPage;
 var
   Param: TDictionary<String, TValue>;
-  TestArr: Array of TValue;
   I: Integer;
 begin
   Param := TDictionary<String, TValue>.Create;
   try
     Param.Add('access_token', access_token);
     Param.Add('title', title);
-
-    SetLength(TestArr, Length(content));
-    for I := Low(content) to High(content) do
-      TestArr[I] := content[I];
-
-    Param.Add('content', TValue.FromArray(PTypeInfo(TestArr), TestArr));
-    Param.Add('author_name', author_name);
+    Param.Add('content', TValue.From<TArray<String>>(content));
     Param.Add('author_name', author_name);
     Param.Add('author_url', author_url);
     Param.Add('return_content', return_content);
@@ -108,6 +158,28 @@ begin
     Param.Free;
   end;
 end;
+
+function TTelegraphAPI.createPage(const access_token, title: String;
+  content: TArray<TtphNodeElement>; const author_name, author_url: String;
+  return_content: Boolean): TtphPage;
+var
+  Param: TDictionary<String, TValue>;
+  I: Integer;
+begin
+  Param := TDictionary<String, TValue>.Create;
+  try
+    Param.Add('access_token', access_token);
+    Param.Add('title', title);
+    Param.Add('content', TValue.From<TArray<TtphNodeElement>>(content));
+    Param.Add('author_name', author_name);
+    Param.Add('author_url', author_url);
+    Param.Add('return_content', return_content);
+    Result := Api<TtphPage>('createPage', Param);
+  finally
+    Param.Free;
+  end;
+end;
+
 
 function TTelegraphAPI.editAccountInfo(const access_token, short_name, author_name,
   author_url: String): TtphAccount;

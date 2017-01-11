@@ -28,14 +28,13 @@ package TelegraphAPI;
 {$IMPLICITBUILD ON}
 
 requires
-{$IFDEF DEBUG}
   fmx,
-{$ENDIF}
   rtl;
 
 contains
   Telegraph.Classes in '..\Source\Telegraph.Classes.pas',
   Telega.API.Core in '..\Source\Telega.API.Core.pas',
-  Telegraph.Api in '..\Source\Telegraph.Api.pas';
+  Telegraph.Api in '..\Source\Telegraph.Api.pas',
+  TelegAPi.Utils in '..\Source\TelegAPi.Utils.pas';
 
 end.

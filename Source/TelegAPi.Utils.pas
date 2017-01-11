@@ -7,22 +7,19 @@ Type
     Class Function IfThen<T>(Const Value: Boolean; IfTrue, IfFalse: T): T;
   end;
 
-  TCommandHelper = Class
-  private
-    FText: TArray<String>;
+  /// <remarks>
+  ///   by Kami@telegram.me/fire_monkey
+  /// </remarks>
+  TEnum<T: record> = class
   public
-    Constructor Create(Const Text: String);
-    Function IsCommand: Boolean;
-    Function Command: String;
-    Function ParamCount: Integer;
-    Function Param(Const Index: Integer): String;
-    Function ParamsToString: String;
-  End;
+    class function FromString(const S: string): T;
+    class function ToString(Value: T): string;
+  end;
 
 implementation
 
 uses
-  System.SysUtils;
+  System.SysUtils, System.TypInfo;
 { TuaUtils }
 
 class function TtgUtils.IfThen<T>(const Value: Boolean; IfTrue, IfFalse: T): T;
@@ -33,42 +30,46 @@ begin
     Result := IfFalse;
 end;
 
-{ TCommandHelper }
+{ TConversions<T> }
 
-function TCommandHelper.Command: String;
+class function TEnum<T>.ToString(Value: T): string;
+var
+  P: PTypeInfo;
 begin
-  if Length(FText) = 0 then
-    Exit;
-  Result := FText[0];
-  if Result.Contains('@') then
-    Result := Result.Substring(0, FText[0].IndexOf('@'));
+  P := PTypeInfo(TypeInfo(T));
+  case P^.Kind of
+    tkEnumeration:
+      case GetTypeData(P)^.OrdType of
+        otSByte, otUByte:
+          Result := GetEnumName(P, PByte(@Value)^);
+        otSWord, otUWord:
+          Result := GetEnumName(P, PWord(@Value)^);
+        otSLong, otULong:
+          Result := GetEnumName(P, PCardinal(@Value)^);
+      end;
+  else
+    raise EArgumentException.CreateFmt('Type %s is not enumeration', [P^.Name]);
+  end;
 end;
 
-constructor TCommandHelper.Create(const Text: String);
+class function TEnum<T>.FromString(const S: string): T;
+var
+  P: PTypeInfo;
 begin
-  FText := Text.Split([' ', ','], TStringSplitOptions.ExcludeEmpty);
-end;
-
-function TCommandHelper.IsCommand: Boolean;
-begin
-  Result := Length(FText) > 0;
-  if Result then
-    Result := FText[0].StartsWith('/');
-end;
-
-function TCommandHelper.Param(const Index: Integer): String;
-begin
-  Result := FText[Index];
-end;
-
-function TCommandHelper.ParamCount: Integer;
-begin
-  Result := Length(FText) - 1;
-end;
-
-function TCommandHelper.ParamsToString: String;
-begin
-  Result := string.Join(' ', Copy(FText, 1, Length(FText)));
+  P := PTypeInfo(TypeInfo(T));
+  case P^.Kind of
+    tkEnumeration:
+      case GetTypeData(P)^.OrdType of
+        otSByte, otUByte:
+          PByte(@Result)^ := GetEnumValue(P, S);
+        otSWord, otUWord:
+          PWord(@Result)^ := GetEnumValue(P, S);
+        otSLong, otULong:
+          PCardinal(@Result)^ := GetEnumValue(P, S);
+      end;
+  else
+    raise EArgumentException.CreateFmt('Type %s is not enumeration', [P^.Name]);
+  end;
 end;
 
 end.

@@ -1,12 +1,12 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{213D1F75-80B8-4759-AE5E-3C84DAF46F11}</ProjectGuid>
+        <ProjectGuid>{ABE730BB-1554-4BD1-8DD6-108641201389}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
         <Projects Include="proj\TelegraphAPI.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Test\Project12.dproj">
+        <Projects Include="Sample\Project4.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -26,23 +26,23 @@
     <Target Name="TelegraphAPI:Make">
         <MSBuild Projects="proj\TelegraphAPI.dproj" Targets="Make"/>
     </Target>
-    <Target Name="Project12">
-        <MSBuild Projects="Test\Project12.dproj"/>
+    <Target Name="Project4">
+        <MSBuild Projects="Sample\Project4.dproj"/>
     </Target>
-    <Target Name="Project12:Clean">
-        <MSBuild Projects="Test\Project12.dproj" Targets="Clean"/>
+    <Target Name="Project4:Clean">
+        <MSBuild Projects="Sample\Project4.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="Project12:Make">
-        <MSBuild Projects="Test\Project12.dproj" Targets="Make"/>
+    <Target Name="Project4:Make">
+        <MSBuild Projects="Sample\Project4.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="TelegraphAPI;Project12"/>
+        <CallTarget Targets="TelegraphAPI;Project4"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="TelegraphAPI:Clean;Project12:Clean"/>
+        <CallTarget Targets="TelegraphAPI:Clean;Project4:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="TelegraphAPI:Make;Project12:Make"/>
+        <CallTarget Targets="TelegraphAPI:Make;Project4:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -167,32 +167,41 @@ var
   parameter: TPair<String, TValue>;
   JA: ISuperArray;
   I: Integer;
+  NodeArray: TArray<TtphNodeElement>;
+  StringArray : TArray<String>;
 begin
   Result := TMultipartFormData.Create;
   for parameter in Parameters do
   begin
     if parameter.Value.IsType<TtphNodeElement> then
     Begin
-      if NOT parameter.Value.AsString.IsEmpty then
-        Result.AddField(parameter.Key, parameter.Value.AsObject.AsJSON)
+      Result.AddField(parameter.Key, parameter.Value.AsObject.AsJSON)
     End
-    else if parameter.Value.IsArray then
+    else if parameter.Value.IsType<TArray<TtphNodeElement>> then
     Begin
       JA := TSuperArray.Create();
-      for I := 0 to parameter.Value.GetArrayLength - 1 do
+      SetLength(NodeArray, Length(parameter.Value.AsType<TArray<TtphNodeElement>>));
+      parameter.Value.ExtractRawData(@NodeArray);
+      for I := Low(NodeArray) to High(NodeArray) do
       Begin
-        if parameter.Value.GetArrayElement(I).IsType<string> then
-        Begin
-          if NOT parameter.Value.GetArrayElement(I).AsString.IsEmpty then
-            JA.Add(parameter.Value.GetArrayElement(I).AsString);
-        End
-        else if parameter.Value.GetArrayElement(I).IsType<TtphNodeElement> then
-        Begin
-          if parameter.Value.GetArrayElement(I).AsObject <> nil then
-            JA.Add(parameter.Value.GetArrayElement(I).AsObject.AsJSON);
-        End;
+        if Assigned(NodeArray[I]) then
+          JA.Add(NodeArray[I].AsJSON);
       End;
       Result.AddField(parameter.Key, JA.AsJSON);
+      JA := Nil;
+    End
+    else if parameter.Value.IsType<TArray<String>> then
+    Begin
+      JA := TSuperArray.Create();
+      SetLength(StringArray, Length(parameter.Value.AsType<TArray<String>>));
+      parameter.Value.ExtractRawData(@StringArray);
+      for I := Low(StringArray) to High(StringArray) do
+      Begin
+        if NOT StringArray[I].IsEmpty then
+          JA.Add(StringArray[I]);
+      End;
+      Result.AddField(parameter.Key, JA.AsJSON);
+      JA := Nil;
     End
     else if parameter.Value.IsType<string> then
     Begin
